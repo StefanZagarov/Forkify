@@ -1,0 +1,352 @@
+Forkify API: https://forkify-api.herokuapp.com/v2
+Demo app: https://forkify-v2.netlify.app/
+
+---Loading a Recipe from API
+SASS is a better way of writing CSS. Since it has some nice additional features, it makes writing CSS in large scale applications easier
+Browsers don't understand SASS so it has to be converted to CSS
+
+
+Starting the project - first steps:
+
+So we started the project by initialising it with "npm init". Then we wrote the name of the application (forkify) and the aughtor.
+(Video states that if we are using Parcel v2, we should remove the "main:" line)
+
+Then we set up the npm scripts - we set up the "start:" script: "start": "parcel index.html";
+After that we set up the build script, which we will run once we are done and want to build our application - "build": "parcel build index.html"
+
+We need to install Parcel v2 itself - npm i parcel@2 -D (-D is also a way to say dev depencency, also can use --save-dev)
+After that we run the script - npm start (start is a special script so it doesn't even need the "run" word, so no need for - npm run start)
+
+On line 14 we changed the defer to type="module" for the controller.js script
+
+We need to install polyfills - we can even install multiple packages at once, so we write - npm i core-js regenerator-runtime
+Then we import it in our controller.js. This makes sure that our application will support most old browsers
+
+
+We often reformat the names of the properties of the objects we receive, for example in this case we don't want the underscores which some property names have in the object we receive from the API
+
+
+Line 32: const recipe = data.data.recipe; Since our variable's name is the same as the object's name, we can instead use destructuring:
+let { recipe } = data.data; - We assign it let so we can create a new recipe object out of that so we can create "clean" property names
+
+
+Icons are not displaying because in the original code we point the path as folder>image, while the bundled files keep the icons in the same dist file. We can fix that by telling Parcel that the icon path is not the same anymore. We do that by importing the picture files
+
+
+
+---The MVC architecture
+Why we need an architecture:
+1. Structure - organized code
+2. Maintainablitiy - easily changeable in the future
+3. Expandablitiy - easily add new features
+
+Different architectures:
+1. Model View Controller - MVC
+2. Model View Presenter - MVP
+3. Flux
+
+These days many developers use frameworks like React, Angular, Vue or Svelte to take care of the architecture
+React is the most famous and widely used framework
+
+We will learn to implement an architecture by ourselves. It is good to know how to do this yourself before start using React or the other frameworks
+
+Every architecture has those components: - 4:20 min
+
+1. Business logic - the code that solves all the business problem. Directly related to what business does and what it needs - it drives the logic of the application, the code created to solve the problem the application was created for
+
+2. State - stores all the data about the application
+
+3. HTTP Library - responsible for making and receiving AJAX requests. Optional but almost always necessary in real-world apps
+
+4. Application Logic (Router) - code that is only concerned about the implementation of application itself. Handles navigation and UI events
+
+5. Presentation Logic (UI Layer) - code that is concerned about the visible part of the application. It's responsible for displaying the application state to the user's interface (keeping sync with State)
+
+
+Every good architecture has a way of separating those components. We are going to use the MVC architecture, which consists of:
+
+1. Model - model is all about the application's data, so it handles the State and the Buisness Logic, which manipulates the state, so these two should be kept closely together. Model also contains the HTTP library, that might get some data from the web (like API or some backend). And since this is also about the data, it also goes into the Model
+
+2. View - handles Presentation Logic, it's concerned about the DOM
+
+3. Controller - contains the application logic. It sits in the middle and acts like a bridge for the Model and View, which shouldn't know about each other, nor about the Controller, only the Controller is connected to them (it's kinda like the Presenter from MVP)
+
+
+One of the big goals of the MVC architecture is to separate the business logic from the application logic, which makes developing the application so much easier. But as a consequence, we then need something to connect those two parts, so that is the controller
+
+An example of flow of actions and data when an event happens - 10:35 min
+
+We create one big Model file, and one bing Controller file, but we will make a separate file for each View. We can separate the Model and the Controller aswell, and many would do that, but we keep them as one file so we don't deal with too many files. We fracture the View in different files because they are much bigger and would make too long file
+
+The View classes will have a parent View class, which will have method that all classes will inherit
+-All the View classes will have their own parent container, so when we call render() or renderSpinner(), it will call those methods on the containers of the class we are calling the method from
+
+
+We will use the fractional library to convert the 0.5 numbers into 1/2 and such
+
+
+
+Difference between MVC and MVP:
+
+1. In MVC the Model and View don't know that the controller exists, here the actions start from the Controller. Whereas in MVP logic starts from the view
+
+2. In MVP the View is kept as simple as pissible, ideally no logic is implemented there, only sends signal to the Presenter so it can initiate the logic from Service. Here View can have logic
+
+
+
+---Helpers and configuration files
+Many real-world applications have modules that are completely independant from the rest of the architecture. These are the module for the project configuration and module for general helper functions (helper module), that are going to be useful across the entire project
+
+In the configuration.js we put all the variables that are constants and are reused across the project. This will allow us to easily configure our project by simply changing the data here in the cofiguration file. We only want variables responsible for defining some important data about the application itself
+
+It is common practice to use capital letters only for constant data, especially in a config file
+
+The helper file contains functions that we will reuse over and over in our project
+
+
+---Event Handlers in MVC: Publisher-Subscriber Pattern
+The events we are listening for, hashchange and load, make more sense to be in view, but the callback function we want to run is in the controller and we don't want to put it in the view, so we have a problem.
+This is when we use the Publisher-Subscriber Pattern
+
+We create a Publisher in the View and a Subscriber in the Controller - events will be listened for in the View and handled in the Controller
+
+Publisher - code that knows when to react
+Subscriber - code that wants to react
+
+When the program initializes, we will subscribe controlRecipes() to addHandlerRender()
+
+
+
+---Implementing Error and Success Messages
+It is better to display some message on the screen for the user when an error occurs, just don't pass the generated error message as it would make little sense to the end user, instead write somethig that would be the most likely case for the error, or something general
+
+
+
+---Implementing Search Results - Part 1
+
+The way we add a parameter in a url is with the question mark
+
+-Notice how model has one object storing all the returning data
+
+
+
+---Implementing Pagination - Part 1
+To make a page, we slice the array with the variables start and end - check getSearchResultPage() in model.js
+
+start will be the number of the page we are on minus one (because the array is zero-based) multiplied by the ammount of elements we want to display on the page - const start = (page - 1) * elementsAmmount
+
+end will be the number of the page we are on multiplied by the ammount of elements we want to display on the page -
+const end = page * elementsAmmount
+
+On page 1:
+start = (page(1) - 1) * 10 = 0
+end = 1 * 10 = 10
+
+Then we slice the array with slice(start, end). The function doesn't include the last element (the 10th element in our case from end), making this perfect (we get from 0 to 9, making it 10 elements per page)
+
+
+
+---Implementing Pagination - Part 2
+
+First, in model.js, in the state object we store the current page and the results per page
+Then we create the getSearchResultPage() function that will take resultsPerPage ammount of elements and slice the array of recipes to display only that ammount of recipes, depending on which page we are
+
+Then we create PaginationView class which will render the buttons with _generateMarkup() depending on which page we are, if there are next or previous pages, or if there is only one page then it won't render anything
+
+After that we create the next or previous page button logic:
+To make the buttons to know which page they should go to when clicked, we use data attribute: we add data-goto="${currentPage +/- 1}" to the respective buttons
+
+In paginationView.js we then create an event listener which will send the goTo data attribute stored in the element to the function handling the button clicks
+
+Finally in controller we create the handler that will re-render the resultsView (the displayed list of 10 elements) and paginationView (update the buttons to display the new pages the user can go to)
+
+
+
+---Updating Recipe Servings
+We once again add data- to the element buttons so they hold a value one smaller or one greater than the current servings value
+
+
+
+---Developing a DOM Updating Algorithm
+Creating an algorithm so we don't have to redownload/re-render everything when we change something on the elements like the servings ammount, or choose a different recipe from the list of recipes. Also useful for refreshing the bookmark icons
+
+The update() method will be in the View because we will want to use it in multiple situations in the project
+
+The update() method will create a new markup, but we will not render it. Instead we will compare this new HTML to the current HTML and then only change text and attributes that have changed from the old version
+
+We have the markup, but that is only a string. So we can't compare it in this state with the DOM elements that we currently have on the page. To fix this, we can convert the markup string to a DOM object that is living in the memory and then we can use that to compare it with the actual DOM that is on the page
+
+If you have forgotten the difference between an element and a node, then watch the beginning of the Advanced DOM section
+
+Check the update() method in the View for full detail on the text and element atttributes updating algorithm
+
+
+
+---Implementing Bookmarks - Part 2
+Check at 14:05 min for explanation for how bookmarksView.js works and its render method
+resultsView.js also gets its methods replaced by the same method from bookmarksView.js
+
+
+
+---Uploading a New Recipe - Part 2
+In helpers.js on line 35 you can see all the info about uploading (posting) data to API
+
+Check model.js on line 34 for explanation of this nice trick:
+...(recipe.key && { key: recipe.key })
+
+
+
+---Wrapping Up: Final Considerations
+There is a standard way of writing documentations and that is JSDocs - more info on jsdoc.app
+
+To initialize JSDoc comment write /** */
+
+ Creating a JSDoc documentation
+On top is the description of the function
+@param data - we specify what type of data we are expecting/working with. In this case data expects an Object, or an Object array. We use | as an OR
+@param render - render is specified as a boolean, and since it's optional we put the parameter name in square brackets [] and write the default value
+@returns - defines what this function returns. In this case the function returns nothing or a string, so it's undefined or string
+@this - defines what the "this" keyword points to, in this case it's an object of View
+
+/**
+ * Render the received object to the DOM
+ * @param {Object | Object[]} data The data to be rendered (recipe)
+ * @param {boolean} [render=true] If false, create a markup string instead of rendering to the DOM
+ * @returns {undefined | string}
+ * @this {Object} View instance
+ * @author Stefan Zagarov
+ */
+
+At the very end, when we are ready with the app, we have the build script on package.json, which will do compression, tree shaking and all of that, before then we deply it to a server
+
+
+---Simple Deployment With Netlify
+Delete the cahce and dist folders created by parcel for a clean start
+
+When running the build script of parcel, we need to manuall specify that we want our output to be in the dist folder. So in the build field we need to specify --dist-dir (which stands for distribution directory, also in Parcel v1 its --out-dir instead) and the folder that we want to actually be created: ./dist
+So in the end the build command looks like this: "build": "parcel build index.html --dist-dir ./dist"
+
+Also it's important to change the "main" field to "default": "default": "index.html"
+This might be just because of a bug that is fixed by writing default instead of main in the beta version of Parcel, so it might not be necessary to be written anymore
+
+TODO:
+Fix weird situation where the recipe doesnt always Delete
+Separate the controller into respective modules for each view (figure out how to make them all connect to the index.html through one controller, maybe search for MVC pattern and see how the controller is supposed to look like).
+Same with model aswell
+
+Hints found so far: When the recipe wont be deleted, the page reloads to the same recipe and is just unbookmarked
+Deleted multiple recipes without reloading the page and there was no problem. But the second i return page reload it stops deleting again
+So far tests confirm that setting the page url to default page causes this, it is one way to get the error
+
+!The problem occurs when I click on the home button and then paste the id of the recipe. Then when i click delete it would just reload and unbookmark
+!Also occurs when I click on the recipe and reload the page
+
+HTMLButtonElement.<anonymous> (http://localhost:1234/index.b0ef5504.js:2481:13)
+
+
+
+
+Working with Git and GitHub
+
+git init - start a repository in the program's main folder
+git config --global user.name StefanZagarov
+git config --global user.email stefanzagarov@gmail.com
+
+We need a .gitignore file
+
+We put node_modules because it's not part of our source code, we can always get it back with npm
+
+We also don't want the dist folder. In GitHub we only want the source code
+
+git status - we see the untracked files
+
+git add -A - adds all files to the staging area
+
+If a file is modified we need to do git add -A (or the specific file) to commit the changes
+
+Commiting:
+git commit -m 'Initial commit' - the first commit is usually called Initial commit
+
+So the proccess is:
+1. git init
+2. git add -A
+git commit -m 'Message'
+
+
+If we want to go back to a previous commit, lets say we made a mistake and want to roll back the code, we write:
+git reset --hard HEAD (head is the id of the commit we want to roll back to)
+
+git log - get a log for all the commits done, from there we can get the commit's id, type q to quit the log
+
+
+But moving between commits like this is dangerous. What we do when we make a new fature is we commit to a new branch
+git branch - list all the branches we have, the star (*) means we are on this branch, to exit, write q
+Branches allow us to upload a parallel versions of our app
+
+git branch new-feature - creating a new branch with the name "new-feature"
+git checkout new-feature - switch to the branch "new-feature"
+
+To commit to the new branch it is the same:
+git add -A
+git commit -m 'Message'
+
+When we change a branch, the code will change to what the code of the branch is - for example if we add a new feature to a side branch and switch to the main branch, the code we've written for the new feature will be removed
+
+
+To merge branches:
+Go to the branch you want to be rewritten and write:
+merge branch-name - merge the branch with the branch you are currently on by writing its name
+
+Then to check if our working tree is clean (there is nothing to commit), we wrtie git status
+
+
+We never work in the master branch usually. We add new features in different branches and then after testing them, we merge them with the main branch. If we find a problem later on, we reroll to the previous merge
+
+There is a nice cheat sheet by github for the important commands. Search for github git cheat sheet
+
+
+
+Now we will upload the code to GitHub. Or in other words: We are going to push our code to a remote branch
+We will do this to set up the continuous integration feature
+
+In GitHub create a new repository
+Dont add a read me because that will create a conflict in our repository down the road
+
+After the repository is created we will be proposed to upload an existing repository with a command line, we will be given this:
+git remote add origin https://github.com/StefanZagarov/Forkify.git
+
+What this did was it added a remote branch called "origin" (we can give it another name if we want, origin is just the standard name), and the url of that branch is the link above
+So what we did was we let our local repository know about this remote repository
+
+Now we can push code to the remote branch - we write the name of the remote branch and the name of the local branch we want to push:
+git push origin master
+
+We can push other branches aswell and that will create a remote branch for the newly uploaded branch
+
+
+It is a good idea to add a README file since all GitHub repositories should have one:
+touch README.md
+This creates a README.md file - md stands for markdown - a special typing format we can use to write simple documents
+
+Then we upload it:
+1. git add -A
+2. git commit -m 'Added a ReadMe'
+3. git push origin master
+
+
+If we want to work from another computer, then we copy the link from the green button Code and do a pull request
+
+Usually we do it the other way arround:
+We create a remote repository, give it a ReadMe and a gitignore, we do a pull request and thats how we connect the local repository to the remote repository. That way it's easier
+
+
+
+Continuous integration with Netlify
+From Netlify we can link the repository so whenever a change happens in the repository, that will trigger a redeployment of our site in Netlify
+
+But since we upload our source code to GitHub, and that is where Netlify gets the code, then we don't use the dist folder built by Parcel
+This is where we can specify the Build command in Netlify. So in the Build field we put - parcel build index.html --dist-dir ./dist
+command from our package.json "build": "parcel build index.html --dist-dir ./dist"
+Netlify will install all the dependencies and dev dependencies from package.json
+So basically whatever we did manually on our computer, Netlify will do it for us
+Publish directory is our dist folder
