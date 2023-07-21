@@ -29,6 +29,8 @@ const controlRecipes = async function ()
     // Don't give error if there is no id in the url, useful for when opening the site without entering id
     if (!id) return;
 
+    console.log(model.state.bookmarks.recipes);
+
     // 0. Update results view to mark selected search result - it's the same as using the render on step 3 in controlSearchResults, but instead we are updating. We use update so there wont be flickering when we click on a recipe from the list, so all the elements and pictures won't have to redownload
     resultsView.update(model.getSearchResultPage());
 
