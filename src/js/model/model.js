@@ -147,6 +147,8 @@ export const removeBookmark = function (id)
 {
     const index = state.bookmarks.recipes.findIndex(element => element.id === id);
 
+    console.log(state.bookmarks.recipes);
+
     if (!index) throw new Error(`No bookmark found`);
 
     // To delete something we use the splice() method
