@@ -7,6 +7,7 @@ class AddRecipeView extends View
     _overlay = document.querySelector(`.overlay`);
     _btnOpen = document.querySelector(`.nav__btn--add-recipe`);
     _btnClose = document.querySelector(`.btn--close-modal`);
+    _btnUpload = document.querySelector(`.upload__btn`);
 
     _createdRecipeMessage = document.querySelector(`.created-recipe-message`);
     _btnCloseCreatedRecipe = document.querySelector(`.btn--close-created-recipe`);
@@ -35,6 +36,7 @@ class AddRecipeView extends View
 
     closeWindow()
     {
+        this._btnUpload.disabled = true;
         // Hiding if there were any errors
         this._errorMessage.classList.add(`hidden`);
         // Used to use .toggle() but it's messing with delete confirmation window as it is also part of the overlay
@@ -47,6 +49,7 @@ class AddRecipeView extends View
     {
         this._overlay.classList.remove(`hidden`);
         this._window.classList.remove(`hidden`);
+        this._btnUpload.disabled = false;
     }
 
     openSuccessWindow()

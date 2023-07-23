@@ -140,13 +140,12 @@ const controlUpload = async function (newRecipe)
 {
   try
   {
+    // Close window
+    addRecipeView.closeWindow();
+
     // Upload the user's recipe
     await model.uploadRecipe(newRecipe);
     // console.log(model.state.recipe);
-
-    // Show spinner
-    // addRecipeView.renderSpinner();
-    addRecipeView.closeWindow();
 
     // Render the user's recipe
     recipeView.render(model.state.recipe);
@@ -164,7 +163,7 @@ const controlUpload = async function (newRecipe)
     await model.loadSearchResults(model.state.recipe.title);
     resultsView.render(model.getSearchResultPage());
 
-    // Go back to page 1 to avoid bug where it displays page 1 but the pagination buttons show page 2
+    // Go back to page 1 to avoid bug where it displays page 1 but the pagination buttons shows page 2
     controlPagination(1);
 
     // Close the form window
