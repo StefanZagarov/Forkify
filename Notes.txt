@@ -240,6 +240,7 @@ So far tests confirm that setting the page url to default page causes this, it i
 
 !The problem occurs when I click on the home button and then paste the id of the recipe. Then when i click delete it would just reload and unbookmark
 !Also occurs when I click on the recipe and reload the page
+!The problem does not come from the API, when i tried to change the logic it did the same. There is some problem with the logic in controller most likely
 
 HTMLButtonElement.<anonymous> (http://localhost:1234/index.b0ef5504.js:2481:13)
 

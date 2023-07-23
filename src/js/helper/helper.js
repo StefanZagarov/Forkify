@@ -44,7 +44,7 @@ export const AJAX = async function (url, uploadData = undefined)
     }
 };
 
-export const remove = async function (url, recipe)
+export const remove = async function (url)
 {
     try
     {
@@ -53,7 +53,8 @@ export const remove = async function (url, recipe)
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(recipe)
+            // Apparantly this is not needed when deleting
+            // body: JSON.stringify(recipe)
         });
 
         const response = await Promise.race([result, timeout(TIMEOUT_SEC)]);
@@ -61,7 +62,7 @@ export const remove = async function (url, recipe)
         // Returns SyntaxError: Unexpected end of JSON input
         // const data = await response.json();
 
-        if (!response.ok) throw new Error(`${data.message} (${response.status})`);
+        if (!response.ok) throw new Error(`${response.status}`);
 
         // return data;
     }

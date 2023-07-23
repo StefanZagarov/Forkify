@@ -132,7 +132,6 @@ class RecipeView extends View
   {
     this._deleteRecipeWindow.classList.toggle(`hidden`);
     this._deleteOverlay.classList.toggle(`hidden`);
-    console.log(this._buttonYes);
   }
 
   addHandlerShowDeleteWindow(handler)

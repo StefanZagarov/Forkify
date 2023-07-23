@@ -4,7 +4,6 @@ import { AJAX, remove } from '../helper/helper.js';
 export const state = {
     recipe: {},
     search: {
-        // We may not need query now, but one day we might need it, so it's better to already have the data stored
         query: ``,
         results: [],
         resultsPerPage: RESULTS_PER_PAGE,
@@ -15,7 +14,10 @@ export const state = {
         recipes: [],
         resultsPerPage: BOOKMARKS_RESULTS_PER_PAGE,
         page: 1
-    }
+    },
+
+    // Store user recipes in case of a future option to display only user recipes
+    userRecipes: [],
 };
 
 const createRecipeObject = function (data)
@@ -147,7 +149,8 @@ export const removeBookmark = function (id)
 {
     const index = state.bookmarks.recipes.findIndex(element => element.id === id);
 
-    if (!index) throw new Error(`No bookmark found`);
+    // Don't know why !index doesn't work anymore
+    if (index === -1) throw new Error(`No bookmark found`);
 
     // To delete something we use the splice() method
     state.bookmarks.recipes.splice(index, 1);
@@ -161,6 +164,7 @@ export const removeBookmark = function (id)
 const persistStorage = function ()
 {
     localStorage.setItem(`bookmarks`, JSON.stringify(state.bookmarks.recipes));
+    localStorage.setItem(`userRecipes`, JSON.stringify(state.userRecipes));
 };
 
 // This function will make a request to the API so it'll be async
@@ -202,6 +206,7 @@ export const uploadRecipe = async function (newRecipe)
         const data = await AJAX(`${API_URL}?key=${KEY}`, recipe);
 
         state.recipe = createRecipeObject(data);
+        state.userRecipes.push(state.recipe);
         addBookmark(state.recipe);
         persistStorage();
     }
@@ -220,7 +225,11 @@ export const deleteRecipe = async function ()
             removeBookmark(state.recipe.id);
         }
 
-        await remove(`${API_URL}${state.recipe.id}?key=${KEY}`, state.recipe);
+        // Delete recipe from userRecipe array
+        const index = (state.userRecipes.findIndex(recipe => recipe.id === state.recipe.id));
+        state.userRecipes.splice(index, 1);
+
+        await remove(`${API_URL}${state.recipe.id}?key=${KEY}`);
     }
     catch (error)
     {
@@ -230,9 +239,13 @@ export const deleteRecipe = async function ()
 
 const init = function ()
 {
-    const storage = localStorage.getItem(`bookmarks`);
+    const storageBookmarks = localStorage.getItem(`bookmarks`);
+    const storageUserRecipes = localStorage.getItem(`userRecipes`);
 
-    if (storage) state.bookmarks.recipes = JSON.parse(storage);
+    if (storageBookmarks) state.bookmarks.recipes = JSON.parse(storageBookmarks);
+    if (storageUserRecipes) state.userRecipes = JSON.parse(storageUserRecipes);
+
+    // remove(`${API_URL}64bd3ae8f4b7f40014ea3cb3?key=${KEY}`, state.recipe);
 };
 init();
 // console.log(state.bookmarks.recipes);
@@ -241,4 +254,10 @@ init();
 const clearBookmarks = function ()
 {
     localStorage.clear(`bookmarks`);
+};
+// clearBookmarks();
+
+const clearAllUserRecipes = function ()
+{
+    state.userRecipes.forEach(async recipe => await remove(`${API_URL}${recipe.id}?key=${KEY}`));
 };
