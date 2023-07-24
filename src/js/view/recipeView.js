@@ -128,6 +128,23 @@ class RecipeView extends View
           `;
   }
 
+  renderDeletedMessage()
+  {
+    const markup = `
+         <div class="error">
+        <div>
+          <svg>
+            <use href="${icons}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>Recipe deleted!</p>
+        </div>
+        `;
+
+    this._clear();
+    this._parentElement.insertAdjacentHTML(`afterbegin`, markup);
+  }
+
   toggleDeleteWindow()
   {
     this._deleteRecipeWindow.classList.toggle(`hidden`);

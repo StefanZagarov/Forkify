@@ -161,6 +161,13 @@ export const removeBookmark = function (id)
     persistStorage();
 };
 
+const removeFromUserRecipes = function ()
+{
+    const index = (state.userRecipes.findIndex(recipe => recipe.id === state.recipe.id));
+    state.userRecipes.splice(index, 1);
+    persistStorage();
+};
+
 const persistStorage = function ()
 {
     localStorage.setItem(`bookmarks`, JSON.stringify(state.bookmarks.recipes));
@@ -226,8 +233,7 @@ export const deleteRecipe = async function ()
         }
 
         // Delete recipe from userRecipe array
-        const index = (state.userRecipes.findIndex(recipe => recipe.id === state.recipe.id));
-        state.userRecipes.splice(index, 1);
+        removeFromUserRecipes();
 
         await remove(`${API_URL}${state.recipe.id}?key=${KEY}`);
     }
@@ -254,10 +260,11 @@ init();
 const clearBookmarks = function ()
 {
     localStorage.clear(`bookmarks`);
+
 };
-// clearBookmarks();
 
 const clearAllUserRecipes = function ()
 {
     state.userRecipes.forEach(async recipe => await remove(`${API_URL}${recipe.id}?key=${KEY}`));
+    localStorage.clear(`userRecipes`);
 };

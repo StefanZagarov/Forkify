@@ -202,26 +202,11 @@ const controlDeleteRecipe = async function ()
 
     // Go back to page 1 to avoid bug where recipes are shown from page 1 but the pagination buttons show page 2
     controlPagination(model.state.recipe.page);
+
+    recipeView.renderDeletedMessage();
   } catch (error)
   {
     console.error(error);
-
-    // const content = error.stack;
-    // // Create element with <a> tag
-    // const link = document.createElement("a");
-
-    // // Create a blog object with the file content which you want to add to the file
-    // const file = new Blob([content], { type: 'text/plain' });
-
-    // // Add file content in the object URL
-    // link.href = URL.createObjectURL(file);
-
-    // // Add file name
-    // link.download = "DeleteError.txt";
-
-    // // Add click event to <a> tag to save file.
-    // link.click();
-    // URL.revokeObjectURL(link.href);
   }
 };
 
